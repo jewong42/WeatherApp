@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">WeatherApp</string>
+    <string name="initial_message">Search for a city or enable location permissions to get started.</string>
+    <string name="weather_search_error">Could not find location.</string>
+</resources>
