@@ -20,21 +20,15 @@ The Weather App follows a clean architecture approach and utilizes the MVVM (Mod
 - Compose: A modern declarative UI toolkit for building native Android user interfaces. It offers a more flexible and efficient way to create UI components compared to traditional View-based frameworks.
 
 ## Configuration
-WeatherApp uses OpenWeatherMap to fetch weather data. The API key is currently hardcoded in the codebase for convenience. However, it is generally recommended to store sensitive information like API keys securely. In a production-ready app, it's advised to use a more secure approach, such as storing the API key in a separate configuration file or using a service like BuildConfig.
+WeatherApp uses OpenWeatherMap to fetch weather data. The API key is currently hardcoded in the codebase for convenience. However, it is general practice to store sensitive information like API keys securely in separate configuration file or using a service like BuildConfig.
 
 API key will be deactivated on Friday, May 5, 2023.
 
 ## Future Enhancements
 
 Although the current implementation of the Weather App provides the core functionality, there are several areas that can be further improved or expanded upon:
-
-- Implement testing with Hilt to ensure the reliability and stability of the app. (Will be added, time permitting)
+- Implement additional testing to ensure the reliability and stability of the app.
 - Add differentiated error handling and informative error messages to enhance the user experience.
 - Incorporate Java to better meet requirements.
 - Incorporate RxJava for reactive programming if future use cases demand it.
 - Expand navigation support to accommodate multiple screens or additional features, such as city search.
-    
-
-
-
-
