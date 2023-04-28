@@ -12,10 +12,7 @@ import com.jewong.weatherapp.feature.weather.domain.use_case.SetLastSearchedUseC
 import com.jewong.weatherapp.feature.weather.presentation.state.WeatherEvent
 import com.jewong.weatherapp.feature.weather.presentation.state.WeatherState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,27 +35,42 @@ class WeatherViewModel @Inject constructor(
 
     fun setDefaultLocation() {
         invokeSubmittedEvent()
-        getDefaultLocationUseCase.invoke().onEach { coord ->
-            if (coord != null) getDefaultWeather(coord)
-            else _state.value = _state.value.copy(isLoading = false)
-        }.launchIn(viewModelScope)
+        viewModelScope.launch {
+            getDefaultLocationUseCase.invoke().collect { coord ->
+                if (coord != null) {
+                    getDefaultWeather(coord)
+                } else {
+                    _state.value = _state.value.copy(isLoading = false)
+                }
+            }
+        }
     }
 
     private fun getDefaultWeather(coord: Coord) {
         invokeSubmittedEvent()
-        getWeatherUseCase.invoke(coord).onEach { weatherData ->
-            if (weatherData != null) updateWeatherData(weatherData, false)
-            else invokeSearchErrorEvent()
-        }.launchIn(viewModelScope)
+        viewModelScope.launch {
+            getWeatherUseCase.invoke(coord).collect { weatherData ->
+                if (weatherData != null) {
+                    updateWeatherData(weatherData, false)
+                } else {
+                    invokeSearchErrorEvent()
+                }
+            }
+        }
     }
 
     fun getWeather() {
         val query = _state.value.query
         invokeSubmittedEvent()
-        getWeatherUseCase.invoke(query).onEach { weatherData ->
-            if (weatherData != null) updateWeatherData(weatherData, true)
-            else invokeSearchErrorEvent()
-        }.launchIn(viewModelScope)
+        viewModelScope.launch {
+            getWeatherUseCase.invoke(query).collect { weatherData ->
+                if (weatherData != null) {
+                    updateWeatherData(weatherData, true)
+                } else {
+                    invokeSearchErrorEvent()
+                }
+            }
+        }
     }
 
     fun updateQuery(query: String) {
