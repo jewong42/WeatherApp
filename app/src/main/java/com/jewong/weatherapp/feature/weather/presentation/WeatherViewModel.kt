@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jewong.weatherapp.feature.weather.data.network.model.Coord
 import com.jewong.weatherapp.feature.weather.data.network.model.WeatherData
+import com.jewong.weatherapp.feature.weather.data.network.model.isNight
 import com.jewong.weatherapp.feature.weather.domain.use_case.GetDefaultLocationUseCase
 import com.jewong.weatherapp.feature.weather.domain.use_case.GetWeatherUseCase
 import com.jewong.weatherapp.feature.weather.domain.use_case.SetLastSearchedUseCase
@@ -79,7 +80,11 @@ class WeatherViewModel @Inject constructor(
 
     private fun updateWeatherData(weatherData: WeatherData, setLastSearched: Boolean) {
         if (setLastSearched) setLastSearchedUseCase(weatherData.coord)
-        _state.value = _state.value.copy(weatherData = weatherData, isLoading = false)
+        _state.value = _state.value.copy(
+            weatherData = weatherData,
+            isLoading = false,
+            isDarkMode = weatherData.isNight()
+        )
     }
 
     private fun invokeSubmittedEvent() {

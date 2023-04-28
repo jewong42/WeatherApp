@@ -6,4 +6,5 @@ data class WeatherState(
     var query: String = "",
     var weatherData: WeatherData? = null,
     var isLoading: Boolean = false,
+    var isDarkMode: Boolean = false
 )

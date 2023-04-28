@@ -14,7 +14,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.text.input.ImeAction
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -22,7 +26,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.jewong.weatherapp.feature.weather.presentation.WeatherViewModel
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun WeatherSearchBar(viewModel: WeatherViewModel = hiltViewModel()) {
     val state = viewModel.state.value
@@ -30,7 +34,12 @@ fun WeatherSearchBar(viewModel: WeatherViewModel = hiltViewModel()) {
         permissions = listOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
     )
 
-    Row(horizontalArrangement = Arrangement.Center) {
+    Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.onKeyEvent {
+        if (it.key == Key.Enter) {
+            viewModel.getWeather()
+        }
+        true
+    }) {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = state.query,

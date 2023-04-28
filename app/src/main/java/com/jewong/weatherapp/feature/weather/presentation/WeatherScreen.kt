@@ -10,6 +10,7 @@ import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -24,6 +25,7 @@ import com.jewong.weatherapp.R
 import com.jewong.weatherapp.feature.weather.presentation.components.WeatherDetails
 import com.jewong.weatherapp.feature.weather.presentation.components.WeatherSearchBar
 import com.jewong.weatherapp.feature.weather.presentation.state.WeatherEvent
+import com.jewong.weatherapp.feature.weather.presentation.themes.WeatherTheme
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -33,12 +35,14 @@ fun WeatherScreen(
     viewModel: WeatherViewModel = hiltViewModel()
 ) {
     val eventFlow = viewModel.eventFlow
+    val state = viewModel.state
     val snackbarHostState = remember { SnackbarHostState() }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val errorMessage = stringResource(R.string.weather_search_error)
+    val isDarkMode = remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = eventFlow) {
+    LaunchedEffect(eventFlow) {
         eventFlow.collectLatest { event ->
             when (event) {
                 is WeatherEvent.SearchError -> {
@@ -52,23 +56,33 @@ fun WeatherScreen(
         }
     }
 
-    Scaffold { contentPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(contentPadding)
-                .padding(horizontal = 16.dp, vertical = 32.dp),
-        ) {
-            Box(modifier = Modifier.weight(1f)) {
-                SnackbarHost(
-                    modifier = Modifier.align(Alignment.TopStart),
-                    hostState = snackbarHostState,
-                ) {
-                    Snackbar(it)
+    LaunchedEffect(state.value) {
+        if (isDarkMode.value != state.value.isDarkMode) {
+            isDarkMode.value = state.value.isDarkMode
+        }
+    }
+
+    WeatherTheme(
+        darkTheme = isDarkMode.value
+    ) {
+        Scaffold { contentPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(contentPadding)
+                    .padding(horizontal = 16.dp, vertical = 32.dp),
+            ) {
+                Box(modifier = Modifier.weight(1f)) {
+                    SnackbarHost(
+                        modifier = Modifier.align(Alignment.TopStart),
+                        hostState = snackbarHostState,
+                    ) {
+                        Snackbar(it)
+                    }
+                    WeatherDetails()
                 }
-                WeatherDetails()
+                WeatherSearchBar()
             }
-            WeatherSearchBar()
         }
     }
 }

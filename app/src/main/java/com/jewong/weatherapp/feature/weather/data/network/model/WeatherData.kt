@@ -17,3 +17,6 @@ data class WeatherData(
     val cod: Int
 )
 
+fun WeatherData.isNight(): Boolean {
+    return this.weather.first().icon.last() == 'n'
+}
