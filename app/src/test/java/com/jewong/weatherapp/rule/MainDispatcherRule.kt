@@ -1,4 +1,4 @@
-package com.jewong.weatherapp.feature.weather.presentation.rule
+package com.jewong.weatherapp.rule
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

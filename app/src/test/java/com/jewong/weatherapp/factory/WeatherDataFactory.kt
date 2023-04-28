@@ -1,4 +1,4 @@
-package com.jewong.weatherapp.factories
+package com.jewong.weatherapp.factory
 
 import com.jewong.weatherapp.feature.weather.data.network.model.*
 

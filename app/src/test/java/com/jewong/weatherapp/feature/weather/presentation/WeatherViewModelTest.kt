@@ -1,11 +1,11 @@
 package com.jewong.weatherapp.feature.weather.presentation
 
-import com.jewong.weatherapp.factories.WeatherDataFactory
+import com.jewong.weatherapp.factory.WeatherDataFactory
 import com.jewong.weatherapp.feature.weather.data.network.model.Coord
 import com.jewong.weatherapp.feature.weather.domain.use_case.GetDefaultLocationUseCase
 import com.jewong.weatherapp.feature.weather.domain.use_case.GetWeatherUseCase
 import com.jewong.weatherapp.feature.weather.domain.use_case.SetLastSearchedUseCase
-import com.jewong.weatherapp.feature.weather.presentation.rule.MainDispatcherRule
+import com.jewong.weatherapp.rule.MainDispatcherRule
 import com.jewong.weatherapp.feature.weather.presentation.state.WeatherEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
