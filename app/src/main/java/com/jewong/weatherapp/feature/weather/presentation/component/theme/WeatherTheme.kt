@@ -1,4 +1,4 @@
-package com.jewong.weatherapp.feature.weather.presentation.themes
+package com.jewong.weatherapp.feature.weather.presentation.component.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.Colors

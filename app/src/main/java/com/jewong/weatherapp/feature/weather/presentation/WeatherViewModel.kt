@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.jewong.weatherapp.feature.weather.data.network.model.Coord
 import com.jewong.weatherapp.feature.weather.data.network.model.WeatherData
 import com.jewong.weatherapp.feature.weather.data.network.model.isNight
+import com.jewong.weatherapp.feature.weather.domain.use_case.GetCurrentLocationUseCase
 import com.jewong.weatherapp.feature.weather.domain.use_case.GetDefaultLocationUseCase
 import com.jewong.weatherapp.feature.weather.domain.use_case.GetWeatherUseCase
 import com.jewong.weatherapp.feature.weather.domain.use_case.SetLastSearchedUseCase
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class WeatherViewModel @Inject constructor(
     private val getWeatherUseCase: GetWeatherUseCase,
     private val getDefaultLocationUseCase: GetDefaultLocationUseCase,
+    private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
     private val setLastSearchedUseCase: SetLastSearchedUseCase,
 ) : ViewModel() {
 
@@ -31,15 +33,15 @@ class WeatherViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        setDefaultLocation()
+        setDefaultWeather()
     }
 
-    fun setDefaultLocation() {
-        invokeSubmittedEvent()
+    fun setDefaultWeather() {
         viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true)
             getDefaultLocationUseCase.invoke().collect { coord ->
                 if (coord != null) {
-                    getDefaultWeather(coord)
+                    setWeather(coord)
                 } else {
                     _state.value = _state.value.copy(isLoading = false)
                 }
@@ -47,12 +49,24 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    private fun getDefaultWeather(coord: Coord) {
-        invokeSubmittedEvent()
+    fun setCurrentLocationWeather() {
         viewModelScope.launch {
+            getCurrentLocationUseCase.invoke().collect { coord ->
+                if (coord != null) {
+                    setWeather(coord)
+                } else {
+                    invokeLocationErrorEvent()
+                }
+            }
+        }
+    }
+
+    private fun setWeather(coord: Coord) {
+        viewModelScope.launch {
+            invokeLoadingEvent()
             getWeatherUseCase.invoke(coord).collect { weatherData ->
                 if (weatherData != null) {
-                    updateWeatherData(weatherData, false)
+                    setWeatherData(weatherData, false)
                 } else {
                     invokeSearchErrorEvent()
                 }
@@ -60,13 +74,13 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    fun getWeather() {
-        val query = _state.value.query
-        invokeSubmittedEvent()
+    fun setWeather() {
         viewModelScope.launch {
+            val query = _state.value.query
+            invokeLoadingEvent()
             getWeatherUseCase.invoke(query).collect { weatherData ->
                 if (weatherData != null) {
-                    updateWeatherData(weatherData, true)
+                    setWeatherData(weatherData, true)
                 } else {
                     invokeSearchErrorEvent()
                 }
@@ -74,11 +88,11 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    fun updateQuery(query: String) {
+    fun setQuery(query: String) {
         _state.value = _state.value.copy(query = query)
     }
 
-    private fun updateWeatherData(weatherData: WeatherData, setLastSearched: Boolean) {
+    private fun setWeatherData(weatherData: WeatherData, setLastSearched: Boolean) {
         if (setLastSearched) setLastSearchedUseCase(weatherData.coord)
         _state.value = _state.value.copy(
             weatherData = weatherData,
@@ -87,13 +101,17 @@ class WeatherViewModel @Inject constructor(
         )
     }
 
-    private fun invokeSubmittedEvent() {
+    private suspend fun invokeLoadingEvent() {
         _state.value = _state.value.copy(isLoading = true, query = "")
-        viewModelScope.launch { _eventFlow.emit(WeatherEvent.Submitted) }
+        _eventFlow.emit(WeatherEvent.Loading)
     }
 
     private suspend fun invokeSearchErrorEvent() {
         _state.value = _state.value.copy(isLoading = false)
         _eventFlow.emit(WeatherEvent.SearchError)
+    }
+
+    private suspend fun invokeLocationErrorEvent() {
+        _eventFlow.emit(WeatherEvent.LocationError)
     }
 }

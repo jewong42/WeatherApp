@@ -1,4 +1,4 @@
-package com.jewong.weatherapp.feature.weather.presentation.components
+package com.jewong.weatherapp.feature.weather.presentation.component
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -28,43 +28,44 @@ import com.jewong.weatherapp.feature.weather.presentation.WeatherViewModel
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalComposeUiApi::class)
 @Composable
-fun WeatherSearchBar(viewModel: WeatherViewModel = hiltViewModel()) {
+fun WeatherSearchBar() {
+    val viewModel: WeatherViewModel = hiltViewModel()
     val state = viewModel.state.value
-    val permissionState = rememberMultiplePermissionsState(
+    val permissionsState = rememberMultiplePermissionsState(
         permissions = listOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
     )
 
     Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.onKeyEvent {
         if (it.key == Key.Enter) {
-            viewModel.getWeather()
+            viewModel.setWeather()
         }
         true
     }) {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = state.query,
-            onValueChange = viewModel::updateQuery,
+            onValueChange = viewModel::setQuery,
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = { viewModel.getWeather() }),
+            keyboardActions = KeyboardActions(onSearch = { viewModel.setWeather() }),
             trailingIcon = {
                 Row {
                     IconButton(onClick = {
-                        permissionState.permissions.forEach { permissionState ->
+                        permissionsState.permissions.forEach { permissionState ->
                             if (permissionState.status.isGranted) {
-                                viewModel.setDefaultLocation()
+                                viewModel.setCurrentLocationWeather()
                                 return@IconButton
                             }
                         }
-                        permissionState.launchMultiplePermissionRequest()
-                        viewModel.setDefaultLocation()
+                        permissionsState.launchMultiplePermissionRequest()
+                        viewModel.setCurrentLocationWeather()
                     }) {
                         Icon(
                             imageVector = Icons.Outlined.Place,
                             contentDescription = null
                         )
                     }
-                    IconButton(onClick = viewModel::getWeather) {
+                    IconButton(onClick = viewModel::setWeather) {
                         Icon(
                             imageVector = Icons.Outlined.Search,
                             contentDescription = null

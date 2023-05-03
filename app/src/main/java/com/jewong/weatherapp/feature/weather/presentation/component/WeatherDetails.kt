@@ -1,4 +1,4 @@
-package com.jewong.weatherapp.feature.weather.presentation.components
+package com.jewong.weatherapp.feature.weather.presentation.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,9 +18,9 @@ import java.util.*
 import kotlin.math.roundToInt
 
 @Composable
-fun WeatherDetails(viewModel: WeatherViewModel = hiltViewModel()) {
+fun WeatherDetails() {
+    val viewModel: WeatherViewModel = hiltViewModel()
     val state = viewModel.state.value
-    val date = getCurrentDate()
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -42,7 +42,7 @@ fun WeatherDetails(viewModel: WeatherViewModel = hiltViewModel()) {
                     style = MaterialTheme.typography.h2
                 )
                 Text(
-                    date,
+                    getCurrentDate(),
                     style = MaterialTheme.typography.body2,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -54,7 +54,7 @@ fun WeatherDetails(viewModel: WeatherViewModel = hiltViewModel()) {
     }
 }
 
-fun getCurrentDate(pattern: String = "EEEE dd MMMM yyyy"): String {
+private fun getCurrentDate(pattern: String = "EEEE dd MMMM yyyy"): String {
     val currentDate = Calendar.getInstance().time
     val dateFormat = SimpleDateFormat(pattern, Locale.getDefault())
     return dateFormat.format(currentDate)

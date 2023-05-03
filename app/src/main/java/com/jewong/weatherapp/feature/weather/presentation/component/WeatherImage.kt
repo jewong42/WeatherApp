@@ -1,4 +1,4 @@
-package com.jewong.weatherapp.feature.weather.presentation.components
+package com.jewong.weatherapp.feature.weather.presentation.component
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable

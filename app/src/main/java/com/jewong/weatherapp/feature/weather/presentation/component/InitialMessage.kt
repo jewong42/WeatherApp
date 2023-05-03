@@ -1,4 +1,4 @@
-package com.jewong.weatherapp.feature.weather.presentation.components
+package com.jewong.weatherapp.feature.weather.presentation.component
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text

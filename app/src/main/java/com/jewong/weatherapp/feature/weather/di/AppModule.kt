@@ -5,10 +5,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.jewong.weatherapp.feature.weather.data.network.OpenWeatherApi
 import com.jewong.weatherapp.feature.weather.data.repository.WeatherRepositoryImpl
-import com.jewong.weatherapp.feature.weather.data.utils.LocationUtilsImpl
+import com.jewong.weatherapp.feature.weather.data.provider.LocationProviderImpl
+import com.jewong.weatherapp.feature.weather.data.provider.PreferencesProviderImpl
 import com.jewong.weatherapp.feature.weather.di.utils.ApiKeyInterceptor
+import com.jewong.weatherapp.feature.weather.domain.provider.LocationProvider
+import com.jewong.weatherapp.feature.weather.domain.provider.PreferencesProvider
 import com.jewong.weatherapp.feature.weather.domain.repository.WeatherRepository
-import com.jewong.weatherapp.feature.weather.domain.utils.LocationUtils
 import com.jewong.weatherapp.feature.weather.shared.Constants.SHARED_PREFERENCES_NAME
 import dagger.Module
 import dagger.Provides
@@ -55,8 +57,13 @@ object AppModule {
     }
 
     @Provides
-    fun provideLocationUtils(context: Context): LocationUtils {
-        return LocationUtilsImpl(context)
+    fun provideLocationProvider(context: Context): LocationProvider {
+        return LocationProviderImpl(context)
+    }
+
+    @Provides
+    fun providePreferencesProvider(sharedPreferences: SharedPreferences): PreferencesProvider {
+        return PreferencesProviderImpl(sharedPreferences)
     }
 
 }

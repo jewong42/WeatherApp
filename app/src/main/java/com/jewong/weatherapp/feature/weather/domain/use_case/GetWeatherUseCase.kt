@@ -1,6 +1,5 @@
 package com.jewong.weatherapp.feature.weather.domain.use_case
 
-
 import com.jewong.weatherapp.feature.weather.data.network.model.Coord
 import com.jewong.weatherapp.feature.weather.data.network.model.WeatherData
 import com.jewong.weatherapp.feature.weather.domain.repository.WeatherRepository

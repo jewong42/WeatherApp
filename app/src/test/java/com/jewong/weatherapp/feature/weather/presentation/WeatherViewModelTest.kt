@@ -2,6 +2,7 @@ package com.jewong.weatherapp.feature.weather.presentation
 
 import com.jewong.weatherapp.factory.WeatherDataFactory
 import com.jewong.weatherapp.feature.weather.data.network.model.Coord
+import com.jewong.weatherapp.feature.weather.domain.use_case.GetCurrentLocationUseCase
 import com.jewong.weatherapp.feature.weather.domain.use_case.GetDefaultLocationUseCase
 import com.jewong.weatherapp.feature.weather.domain.use_case.GetWeatherUseCase
 import com.jewong.weatherapp.feature.weather.domain.use_case.SetLastSearchedUseCase
@@ -39,14 +40,21 @@ class WeatherViewModelTest {
     private lateinit var getDefaultLocationUseCase: GetDefaultLocationUseCase
 
     @Mock
+    private lateinit var getCurrentLocationUseCase: GetCurrentLocationUseCase
+
+    @Mock
     private lateinit var setLastSearchedUseCase: SetLastSearchedUseCase
 
     private lateinit var weatherViewModel: WeatherViewModel
 
     @Before
     fun setup() {
-        weatherViewModel =
-            WeatherViewModel(getWeatherUseCase, getDefaultLocationUseCase, setLastSearchedUseCase)
+        weatherViewModel = WeatherViewModel(
+            getWeatherUseCase,
+            getDefaultLocationUseCase,
+            getCurrentLocationUseCase,
+            setLastSearchedUseCase
+        )
         val field: Field = weatherViewModel.javaClass.getDeclaredField("_eventFlow")
         field.isAccessible = true
         field.set(weatherViewModel, eventFlow)
@@ -60,7 +68,7 @@ class WeatherViewModelTest {
         `when`(getDefaultLocationUseCase.invoke()).thenReturn(flowOf(coordinate))
         `when`(getWeatherUseCase.invoke(coordinate)).thenReturn(flowOf(weatherData))
 
-        weatherViewModel.setDefaultLocation()
+        weatherViewModel.setDefaultWeather()
         advanceUntilIdle()
 
         assertEquals(weatherData, weatherViewModel.state.value.weatherData)
@@ -73,8 +81,8 @@ class WeatherViewModelTest {
 
         `when`(getWeatherUseCase.invoke(query)).thenReturn(flowOf(weatherData))
 
-        weatherViewModel.updateQuery(query)
-        weatherViewModel.getWeather()
+        weatherViewModel.setQuery(query)
+        weatherViewModel.setWeather()
         advanceUntilIdle()
 
         assertEquals(weatherData, weatherViewModel.state.value.weatherData)
@@ -87,8 +95,8 @@ class WeatherViewModelTest {
 
         `when`(getWeatherUseCase.invoke(query)).thenReturn(flowOf(weatherData))
 
-        weatherViewModel.updateQuery(query)
-        weatherViewModel.getWeather()
+        weatherViewModel.setQuery(query)
+        weatherViewModel.setWeather()
         advanceUntilIdle()
 
         verify(eventFlow).emit(WeatherEvent.SearchError)
